@@ -37,7 +37,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function update(array $data): ResponseInterface
     {
-        return $this->getHttpClient()->request('PATCH', 'server', [
+        return $this->getHttpClient()->request('PATCH', $this->getServerUri(), [
             'json' => $data,
         ]);
     }
@@ -51,7 +51,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function reinstall(array $data = null): ResponseInterface
     {
-        return $this->getHttpClient()->request('POST', 'server/reinstall', [
+        return $this->getHttpClient()->request('POST', $this->getServerUri() . '/reinstall', [
             'json' => $data ?? [],
         ]);
     }
@@ -64,7 +64,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function rebuild(): ResponseInterface
     {
-        return $this->getHttpClient()->request('POST', 'server/rebuild');
+        return $this->getHttpClient()->request('POST', $this->getServerUri() . '/rebuild');
     }
 
     /**
@@ -75,7 +75,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function suspend(): ResponseInterface
     {
-        return $this->getHttpClient()->request('POST', 'server/suspend');
+        return $this->getHttpClient()->request('POST', $this->getServerUri() . '/suspend');
     }
 
     /**
@@ -86,7 +86,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function unsuspend(): ResponseInterface
     {
-        return $this->getHttpClient()->request('POST', 'server/unsuspend');
+        return $this->getHttpClient()->request('POST', $this->getServerUri() . '/unsuspend');
     }
 
     /**
@@ -97,7 +97,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function delete(): ResponseInterface
     {
-        return $this->getHttpClient()->request('DELETE', 'servers');
+        return $this->getHttpClient()->request('DELETE', $this->getServerUri());
     }
 
     /**
@@ -108,7 +108,7 @@ class ServerRepository extends BaseRepository implements ServerRepositoryInterfa
      */
     public function details(): ResponseInterface
     {
-        return $this->getHttpClient()->request('GET', 'server');
+        return $this->getHttpClient()->request('GET', $this->getServerUri());
     }
 
     /**

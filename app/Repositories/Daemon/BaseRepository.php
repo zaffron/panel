@@ -96,6 +96,48 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
     /**
+     * Returns the relative API uri of the server.
+     *
+     * @return string
+     */
+    protected function getServerUri() {
+        if ($this->getNodeDaemonGeneration() == 2) {
+            return 'servers/' . $this->getServer()->uuid;
+        }
+        return 'server';
+    }
+
+    /**
+     * Resolve the node using the server if it is not set.
+     * Throws a RuntimeException if the server isn't set either.
+     *
+     * @throws RuntimeException
+     */
+    private function resolveServerNodeIfNotSet() {
+        if (! $this->getNode() instanceof Node) {
+            if (! $this->getServer() instanceof  Server) {
+                throw new RuntimeException('An instance of ' . Node::class . ' or ' . Server::class . ' must be set on this repository in order to return a client.');
+            }
+
+            $this->getServer()->loadMissing('node');
+            $this->setNode($this->getServer()->getRelation('node'));
+        }
+    }
+
+    /**
+     * Return the daemon_generation of the node being used.
+     * If node is not set we try to resolve it using the server.
+     * If the server is not set it will throw an exception.
+     *
+     * @return int
+     */
+    public function getNodeDaemonGeneration()
+    {
+        $this->resolveServerNodeIfNotSet();
+        return $this->getNode()->daemon_generation;
+    }
+
+    /**
      * Set the token to be used in the X-Access-Token header for requests to the daemon.
      *
      * @param string $token
@@ -126,25 +168,25 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     public function getHttpClient(array $headers = []): Client
     {
-        // If no node is set, load the relationship onto the Server model
-        // and pass that to the setNode function.
-        if (! $this->getNode() instanceof Node) {
-            if (! $this->getServer() instanceof  Server) {
-                throw new RuntimeException('An instance of ' . Node::class . ' or ' . Server::class . ' must be set on this repository in order to return a client.');
+        $this->resolveServerNodeIfNotSet();
+
+        if ($this->getNode()->daemon_generation == 2) {
+            $headers['Authorization'] = 'Baerer ' . $this->getToken();
+
+            $baseUri = sprintf('%s://%s:%s/api/v1/', $this->getNode()->scheme, $this->getNode()->fqdn, $this->getNode()->daemonListen);
+        } else {
+            if ($this->getServer() instanceof Server) {
+                $headers['X-Access-Server'] = $this->getServer()->uuid;
             }
 
-            $this->getServer()->loadMissing('node');
-            $this->setNode($this->getServer()->getRelation('node'));
+            $headers['X-Access-Token'] = $this->getToken() ?? $this->getNode()->daemonSecret;
+
+            $baseUri = sprintf('%s://%s:%s/v1/', $this->getNode()->scheme, $this->getNode()->fqdn, $this->getNode()->daemonListen);
         }
 
-        if ($this->getServer() instanceof Server) {
-            $headers['X-Access-Server'] = $this->getServer()->uuid;
-        }
-
-        $headers['X-Access-Token'] = $this->getToken() ?? $this->getNode()->daemonSecret;
 
         return new Client([
-            'base_uri' => sprintf('%s://%s:%s/v1/', $this->getNode()->scheme, $this->getNode()->fqdn, $this->getNode()->daemonListen),
+            'base_uri' => $baseUri,
             'timeout' => config('pterodactyl.guzzle.timeout'),
             'connect_timeout' => config('pterodactyl.guzzle.connect_timeout'),
             'headers' => $headers,

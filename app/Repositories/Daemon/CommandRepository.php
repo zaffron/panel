@@ -16,7 +16,7 @@ class CommandRepository extends BaseRepository implements CommandRepositoryInter
      */
     public function send(string $command): ResponseInterface
     {
-        return $this->getHttpClient()->request('POST', 'server/command', [
+        return $this->getHttpClient()->request('POST', $this->getServerUri() . '/command', [
             'json' => [
                 'command' => $command,
             ],
