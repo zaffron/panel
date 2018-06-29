@@ -58,32 +58,58 @@ class ServerConfigurationStructureService
         if (! is_null($pack)) {
             $pack = $server->getRelation('pack')->uuid;
         }
+        $this->getServer()->loadMissing('node');
+        $node = $server->getRelation('node');
 
-        return [
-            'uuid' => $server->uuid,
-            'build' => [
-                'default' => [
-                    'ip' => $server->allocation->ip,
-                    'port' => $server->allocation->port,
+        if ($node->daemon_generation == 2) {
+            return [
+                'uuid' => $server->uuid,
+                'eggUuid' => $server->egg->uuid,
+                'startupCommand' => '',
+                'environmentVariables' => $this->environment->handle($server),
+                'allocations' => [
+                    'main' => ['ip' => $server->allocation->ip, 'port' => $server->allocation->port],
+                    'additional' => $server->allocations->map(function ($allocation) {
+                        return ['ip' => $allocation->ip, 'port' => $allocation->port];
+                    })->toArray(),
                 ],
-                'ports' => $server->allocations->groupBy('ip')->map(function ($item) {
-                    return $item->pluck('port');
-                })->toArray(),
-                'env' => $this->environment->handle($server),
-                'memory' => (int) $server->memory,
-                'swap' => (int) $server->swap,
-                'io' => (int) $server->io,
-                'cpu' => (int) $server->cpu,
-                'disk' => (int) $server->disk,
-                'image' => $server->image,
-            ],
-            'service' => [
-                'egg' => $server->egg->uuid,
-                'pack' => $pack,
-                'skip_scripts' => $server->skip_scripts,
-            ],
-            'rebuild' => false,
-            'suspended' => (int) $server->suspended,
-        ];
+                'settings' => [
+                    'memory' => (int)$server->memory,
+                    'swap' => (int)$server->swap,
+                    'io' => (int)$server->io,
+                    'cpu' => (int)$server->cpu,
+                    'disk' => (int)$server->disk,
+                    'image' => $server->image,
+                ],
+                'suspended' => $server->suspended,
+            ];
+        } else {
+            return [
+                'uuid' => $server->uuid,
+                'build' => [
+                    'default' => [
+                        'ip' => $server->allocation->ip,
+                        'port' => $server->allocation->port,
+                    ],
+                    'ports' => $server->allocations->groupBy('ip')->map(function ($item) {
+                        return $item->pluck('port');
+                    })->toArray(),
+                    'env' => $this->environment->handle($server),
+                    'memory' => (int)$server->memory,
+                    'swap' => (int)$server->swap,
+                    'io' => (int)$server->io,
+                    'cpu' => (int)$server->cpu,
+                    'disk' => (int)$server->disk,
+                    'image' => $server->image,
+                ],
+                'service' => [
+                    'egg' => $server->egg->uuid,
+                    'pack' => $pack,
+                    'skip_scripts' => $server->skip_scripts,
+                ],
+                'rebuild' => false,
+                'suspended' => (int)$server->suspended,
+            ];
+        }
     }
 }
