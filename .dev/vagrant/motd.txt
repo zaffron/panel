@@ -1,7 +1,7 @@
 #####################################################
             Pterodactyl Panel Vagrant VM
 
-Install: /var/www/html/pterodactyl
+Install: /var/www/pterodactyl
 Ports:
     Panel: 80     (50080 on host)
     MailHog: 8025 (58025 on host)

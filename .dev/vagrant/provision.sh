@@ -1,8 +1,9 @@
 #!/bin/bash
 
 echo "Provisioning development environment for Pterodactyl Panel."
-cp /var/www/html/pterodactyl/.dev/vagrant/motd.txt /etc/motd
+cp /var/www/pterodactyl/.dev/vagrant/motd.txt /etc/motd
 chmod -x /etc/update-motd.d/10-help-text /etc/update-motd.d/51-cloudguest
+cp /var/www/pterodactyl/.dev/vagrant/hosts /etc/hosts
 
 apt-get install -y software-properties-common > /dev/null
 
@@ -27,23 +28,37 @@ curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 echo "Install and run mailhog"
 curl -sL -o /usr/bin/mailhog https://github.com/mailhog/MailHog/releases/download/v1.0.0/MailHog_linux_amd64
 chmod +x /usr/bin/mailhog
-cp /var/www/html/pterodactyl/.dev/vagrant/mailhog.service /etc/systemd/system/
+cp /var/www/pterodactyl/.dev/vagrant/mailhog.service /etc/systemd/system/
 systemctl enable mailhog.service
 systemctl start mailhog
 
 echo "Configure xDebug"
-cp /var/www/html/pterodactyl/.dev/vagrant/xdebug.ini /etc/php/7.2/mods-available/
+cp /var/www/pterodactyl/.dev/vagrant/xdebug.ini /etc/php/7.2/mods-available/
 systemctl restart php7.2-fpm
 
 echo "Configure nginx"
-cp /var/www/html/pterodactyl/.dev/vagrant/pterodactyl.conf /etc/nginx/sites-available/
+if [[ -f /var/www/pterodactyl/.dev/local/pterodactyl.test.pem && -f /var/www/pterodactyl/.dev/local/pterodactyl.test-key.pem ]]; then
+    echo "SSL Certificates found. Configuring SSL"
+    cp /var/www/pterodactyl/.dev/vagrant/pterodactyl.ssl.conf /etc/nginx/sites-available/pterodactyl.conf
+else
+    cp /var/www/pterodactyl/.dev/vagrant/pterodactyl.conf /etc/nginx/sites-available/pterodactyl.conf
+fi
 rm /etc/nginx/sites-available/default
 ln -s /etc/nginx/sites-available/pterodactyl.conf /etc/nginx/sites-enabled/pterodactyl.conf
 systemctl restart nginx
 
+if [[ -f /var/www/pterodactyl/.dev/local/ca.pem ]]; then
+    echo "Found custom CA, adding to system wide CAs"
+    mkdir /usr/local/share/ca-certificates/mkcert
+    chmod 755 /usr/local/share/ca-certificates/mkcert
+    cp /var/www/pterodactyl/.dev/local/ca.pem /usr/local/share/ca-certificates/mkcert/ca.crt
+    chmod 644 /usr/local/share/ca-certificates/mkcert/ca.crt
+    update-ca-certificates
+fi
+
 echo "Setup database"
 # Replace default config with custom one to bind mysql to 0.0.0.0 to make it accessible from the host
-cp /var/www/html/pterodactyl/.dev/vagrant/mariadb.cnf /etc/mysql/my.cnf
+cp /var/www/pterodactyl/.dev/vagrant/mariadb.cnf /etc/mysql/my.cnf
 systemctl restart mariadb
 mysql -u root -ppterodactyl << SQL
 CREATE DATABASE panel;
@@ -53,13 +68,13 @@ FLUSH PRIVILEGES;
 SQL
 
 echo "Setup pterodactyl queue worker service"
-cp /var/www/html/pterodactyl/.dev/vagrant/pteroq.service /etc/systemd/system/
+cp /var/www/pterodactyl/.dev/vagrant/pteroq.service /etc/systemd/system/
 systemctl enable pteroq.service
 
 
 echo "Setup panel with base settings"
-cp /var/www/html/pterodactyl/.dev/vagrant/.env.vagrant /var/www/html/pterodactyl/.env
-cd /var/www/html/pterodactyl
+cp /var/www/pterodactyl/.dev/vagrant/.env.vagrant /var/www/pterodactyl/.env
+cd /var/www/pterodactyl
 chmod -R 755 storage/* bootstrap/cache
 composer install --no-progress
 php artisan key:generate --force
@@ -69,7 +84,7 @@ php artisan p:user:make --name-first Test --name-last Admin --username admin --e
 php artisan p:user:make --name-first Test --name-last User --username user --email testuser@pterodactyl.io --password Ptero123 --admin 0
 
 echo "Add queue cronjob and start queue worker"
-(crontab -l 2>/dev/null; echo "* * * * * php /var/www/html/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
+(crontab -l 2>/dev/null; echo "* * * * * php /var/www/pterodactyl/artisan schedule:run >> /dev/null 2>&1") | crontab -
 systemctl start pteroq
 
 echo "   ----------------"

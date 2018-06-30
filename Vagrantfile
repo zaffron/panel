@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
     config.vm.box = "bento/ubuntu-16.04"
 
-    config.vm.synced_folder "./", "/var/www/html/pterodactyl",
+    config.vm.synced_folder "./", "/var/www/pterodactyl",
         owner: "www-data", group: "www-data"
 
     config.vm.provision :shell, path: ".dev/vagrant/provision.sh"
