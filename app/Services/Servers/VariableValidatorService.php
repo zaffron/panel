@@ -83,7 +83,7 @@ class VariableValidatorService
             }
 
             $data['environment'][$variable->env_variable] = array_get($fields, $variable->env_variable);
-            $rules['environment.' . $variable->env_variable] = $variable->rules;
+            $rules['environment.' . $variable->env_variable] = $variable->rules ?? '';
             $customAttributes['environment.' . $variable->env_variable] = trans('validation.internal.variable_value', ['env' => $variable->name]);
         }
 
