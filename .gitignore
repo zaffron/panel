@@ -6,6 +6,7 @@
 storage/framework/*
 /.idea
 /nbproject
+.dev/local
 
 package-lock.json
 composer.lock
