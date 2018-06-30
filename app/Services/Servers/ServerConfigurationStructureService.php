@@ -58,7 +58,7 @@ class ServerConfigurationStructureService
         if (! is_null($pack)) {
             $pack = $server->getRelation('pack')->uuid;
         }
-        $this->getServer()->loadMissing('node');
+        $server->loadMissing('node');
         $node = $server->getRelation('node');
 
         if ($node->daemon_generation == 2) {
