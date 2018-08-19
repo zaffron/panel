@@ -23,7 +23,7 @@ use Pterodactyl\Services\Subusers\SubuserUpdateService;
 use Pterodactyl\Services\Subusers\PermissionCreationService;
 use Pterodactyl\Services\DaemonKeys\DaemonKeyProviderService;
 use Pterodactyl\Contracts\Repository\SubuserRepositoryInterface;
-use Pterodactyl\Contracts\Repository\PermissionRepositoryInterface;
+use Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
 use Pterodactyl\Contracts\Repository\Daemon\ServerRepositoryInterface as DaemonServerRepositoryInterface;
 
@@ -47,7 +47,7 @@ class SubuserUpdateServiceTest extends TestCase
     private $keyProviderService;
 
     /**
-     * @var \Pterodactyl\Contracts\Repository\PermissionRepositoryInterface|\Mockery\Mock
+     * @var \Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface|\Mockery\Mock
      */
     private $permissionRepository;
 
@@ -71,7 +71,7 @@ class SubuserUpdateServiceTest extends TestCase
         $this->connection = m::mock(ConnectionInterface::class);
         $this->daemonRepository = m::mock(DaemonServerRepositoryInterface::class);
         $this->keyProviderService = m::mock(DaemonKeyProviderService::class);
-        $this->permissionRepository = m::mock(PermissionRepositoryInterface::class);
+        $this->permissionRepository = m::mock(SubuserPermissionRepositoryInterface::class);
         $this->permissionService = m::mock(PermissionCreationService::class);
         $this->repository = m::mock(SubuserRepositoryInterface::class);
     }

@@ -5,7 +5,7 @@ namespace Pterodactyl\Http\Controllers\Server;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Pterodactyl\Models\Permission;
+use Pterodactyl\Models\SubuserPermission;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Pterodactyl\Http\Controllers\Controller;
@@ -106,7 +106,7 @@ class SubuserController extends Controller
 
         return view('server.users.view', [
             'subuser' => $subuser,
-            'permlist' => Permission::getPermissions(),
+            'permlist' => SubuserPermission::getPermissions(),
             'permissions' => $subuser->getRelation('permissions')->mapWithKeys(function ($item) {
                 return [$item->permission => true];
             }),
@@ -147,7 +147,7 @@ class SubuserController extends Controller
         $this->authorize('create-subuser', $server);
         $this->setRequest($request)->injectJavascript();
 
-        return view('server.users.new', ['permissions' => Permission::getPermissions()]);
+        return view('server.users.new', ['permissions' => SubuserPermission::getPermissions()]);
     }
 
     /**

@@ -14,7 +14,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Database\ConnectionInterface;
 use Pterodactyl\Services\DaemonKeys\DaemonKeyProviderService;
 use Pterodactyl\Contracts\Repository\SubuserRepositoryInterface;
-use Pterodactyl\Contracts\Repository\PermissionRepositoryInterface;
+use Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
 use Pterodactyl\Contracts\Repository\Daemon\ServerRepositoryInterface as DaemonServerRepositoryInterface;
 
@@ -36,7 +36,7 @@ class SubuserUpdateService
     private $keyProviderService;
 
     /**
-     * @var \Pterodactyl\Contracts\Repository\PermissionRepositoryInterface
+     * @var \Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface
      */
     private $permissionRepository;
 
@@ -57,7 +57,7 @@ class SubuserUpdateService
      * @param \Pterodactyl\Services\DaemonKeys\DaemonKeyProviderService          $keyProviderService
      * @param \Pterodactyl\Contracts\Repository\Daemon\ServerRepositoryInterface $daemonRepository
      * @param \Pterodactyl\Services\Subusers\PermissionCreationService           $permissionService
-     * @param \Pterodactyl\Contracts\Repository\PermissionRepositoryInterface    $permissionRepository
+     * @param \Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface    $permissionRepository
      * @param \Pterodactyl\Contracts\Repository\SubuserRepositoryInterface       $repository
      */
     public function __construct(
@@ -65,7 +65,7 @@ class SubuserUpdateService
         DaemonKeyProviderService $keyProviderService,
         DaemonServerRepositoryInterface $daemonRepository,
         PermissionCreationService $permissionService,
-        PermissionRepositoryInterface $permissionRepository,
+        SubuserPermissionRepositoryInterface $permissionRepository,
         SubuserRepositoryInterface $repository
     ) {
         $this->connection = $connection;

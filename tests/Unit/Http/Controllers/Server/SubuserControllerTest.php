@@ -12,7 +12,7 @@ namespace Tests\Unit\Http\Controllers\Server;
 use Mockery as m;
 use Pterodactyl\Models\Server;
 use Pterodactyl\Models\Subuser;
-use Pterodactyl\Models\Permission;
+use Pterodactyl\Models\SubuserPermission;
 use Prologue\Alerts\AlertsMessageBag;
 use Tests\Unit\Http\Controllers\ControllerTestCase;
 use Pterodactyl\Services\Subusers\SubuserUpdateService;
@@ -111,7 +111,7 @@ class SubuserControllerTest extends ControllerTestCase
         $this->assertViewHasKey('permlist', $response);
         $this->assertViewHasKey('permissions', $response);
         $this->assertViewKeyEquals('subuser', $subuser, $response);
-        $this->assertViewKeyEquals('permlist', Permission::getPermissions(), $response);
+        $this->assertViewKeyEquals('permlist', SubuserPermission::getPermissions(), $response);
         $this->assertViewKeyEquals('permissions', collect([
             'some.permission' => true,
             'another.permission' => true,
@@ -157,7 +157,7 @@ class SubuserControllerTest extends ControllerTestCase
         $this->assertIsViewResponse($response);
         $this->assertViewNameEquals('server.users.new', $response);
         $this->assertViewHasKey('permissions', $response);
-        $this->assertViewKeyEquals('permissions', Permission::getPermissions(), $response);
+        $this->assertViewKeyEquals('permissions', SubuserPermission::getPermissions(), $response);
     }
 
     /**

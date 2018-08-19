@@ -96,7 +96,7 @@ class Subuser extends Model implements CleansAttributes, ValidableContract
      */
     public function permissions()
     {
-        return $this->hasMany(Permission::class);
+        return $this->hasMany(SubuserPermission::class);
     }
 
     /**

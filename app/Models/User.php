@@ -214,7 +214,7 @@ class User extends Model implements
      */
     public function permissions()
     {
-        return $this->hasManyThrough(Permission::class, Subuser::class);
+        return $this->hasManyThrough(SubuserPermission::class, Subuser::class);
     }
 
     /**

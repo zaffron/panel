@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Sofa\Eloquence\Contracts\CleansAttributes;
 use Sofa\Eloquence\Contracts\Validable as ValidableContract;
 
-class Permission extends Model implements CleansAttributes, ValidableContract
+class SubuserPermission extends Model implements CleansAttributes, ValidableContract
 {
     use Eloquence, Validable;
 
@@ -30,7 +30,7 @@ class Permission extends Model implements CleansAttributes, ValidableContract
      *
      * @var string
      */
-    protected $table = 'permissions';
+    protected $table = 'subuser_permissions';
 
     /**
      * Fields that are not mass assignable.

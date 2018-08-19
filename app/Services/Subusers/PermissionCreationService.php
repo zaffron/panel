@@ -10,22 +10,22 @@
 namespace Pterodactyl\Services\Subusers;
 
 use Webmozart\Assert\Assert;
-use Pterodactyl\Models\Permission;
-use Pterodactyl\Contracts\Repository\PermissionRepositoryInterface;
+use Pterodactyl\Models\SubuserPermission;
+use Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface;
 
 class PermissionCreationService
 {
     /**
-     * @var \Pterodactyl\Contracts\Repository\PermissionRepositoryInterface
+     * @var \Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface
      */
     protected $repository;
 
     /**
      * PermissionCreationService constructor.
      *
-     * @param \Pterodactyl\Contracts\Repository\PermissionRepositoryInterface $repository
+     * @param \Pterodactyl\Contracts\Repository\SubuserPermissionRepositoryInterface $repository
      */
-    public function __construct(PermissionRepositoryInterface $repository)
+    public function __construct(SubuserPermissionRepositoryInterface $repository)
     {
         $this->repository = $repository;
     }
@@ -42,12 +42,12 @@ class PermissionCreationService
     {
         Assert::integerish($subuser, 'First argument passed to handle must be an integer, received %s.');
 
-        $permissionMappings = Permission::getPermissions(true);
+        $permissionMappings = SubuserPermission::getPermissions(true);
         $insertPermissions = [];
 
         foreach ($permissions as $permission) {
             if (array_key_exists($permission, $permissionMappings)) {
-                Assert::stringNotEmpty($permission, 'Permission argument provided must be a non-empty string, received %s.');
+                Assert::stringNotEmpty($permission, 'SubuserPermission argument provided must be a non-empty string, received %s.');
 
                 array_push($insertPermissions, [
                     'subuser_id' => $subuser,

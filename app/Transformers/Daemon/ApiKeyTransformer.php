@@ -4,7 +4,7 @@ namespace Pterodactyl\Transformers\Daemon;
 
 use Carbon\Carbon;
 use Pterodactyl\Models\DaemonKey;
-use Pterodactyl\Models\Permission;
+use Pterodactyl\Models\SubuserPermission;
 use League\Fractal\TransformerAbstract;
 use Pterodactyl\Contracts\Repository\SubuserRepositoryInterface;
 use Pterodactyl\Contracts\Repository\DaemonKeyRepositoryInterface;
@@ -57,7 +57,7 @@ class ApiKeyTransformer extends TransformerAbstract
         $subuser = $this->repository->getWithPermissionsUsingUserAndServer($key->user_id, $key->server_id);
 
         $permissions = $subuser->getRelation('permissions')->pluck('permission')->toArray();
-        $mappings = Permission::getPermissions(true);
+        $mappings = SubuserPermission::getPermissions(true);
         $daemonPermissions = ['s:console'];
 
         foreach ($permissions as $permission) {
