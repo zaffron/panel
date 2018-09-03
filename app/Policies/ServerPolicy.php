@@ -27,7 +27,7 @@ class ServerPolicy
     protected function checkPermission(User $user, Server $server, $permission)
     {
         $permissions = Cache::remember('ServerPolicy.' . $user->uuid . $server->uuid, Carbon::now()->addSeconds(5), function () use ($user, $server) {
-            return $user->permissions()->server($server)->get()->transform(function ($item) {
+            return $user->subuserPermissions()->server($server)->get()->transform(function ($item) {
                 return $item->permission;
             })->values();
         });
