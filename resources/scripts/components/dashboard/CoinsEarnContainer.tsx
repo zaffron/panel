@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
+
 import ContentBox from '@/components/elements/ContentBox';
 import PageContentBlock from '@/components/elements/PageContentBlock';
 import tw from 'twin.macro';
 import { breakpoint } from '@/theme';
 import styled from 'styled-components/macro';
-import { useState } from 'react';
+import http from '@/api/http';
 
 const Container = styled.div`
     ${tw`flex flex-wrap my-10`};
@@ -22,8 +23,51 @@ const Container = styled.div`
     }
 `;
 
-export default () => {
-    const totalCoinsEarned = useState(0);
+export const CoinsContainer = () => {
+    const [ totalCoinsEarned, setTotalCoinsEarned ] = useState(0);
+    const [ keepAlive, setKeepAlive ] = useState(true);
+    const [ failCounter, updateFailCounter ] = useState(0);
+    const [ response, setResponse ] = useState(true);
+
+    useEffect(() => {
+        request();
+    });
+
+    const request = async () => {
+        if (keepAlive) {
+            if (response) {
+                // This makes it unable to send a new request
+                // unless you get response from last request
+                setResponse(false);
+                http.get('/api/client/earn/update').then(resp => {
+                    if (resp.status === 200) {
+                        setKeepAlive(true);
+                        updateFailCounter(0);
+                        if (resp.data && resp.data.increment) {
+                            const coinsEarned = parseFloat(totalCoinsEarned.toFixed() + resp.data.increment.toFixed());
+                            setTotalCoinsEarned(coinsEarned);
+                        }
+                    } else {
+                        updateFailCounter(failCounter + 1);
+                    }
+
+                    if (failCounter > 10) {
+                        setKeepAlive(false);
+                    }
+                    setResponse(true);
+                }).catch(err => {
+                    console.log(err);
+                    updateFailCounter(failCounter + 1);
+                    if (failCounter > 10) {
+                        setKeepAlive(false);
+                    }
+                    setResponse(true);
+                });
+            }
+
+            setTimeout(() => request(), 1000 * 20);
+        }
+    };
 
     return (
         <PageContentBlock title={'Coins Overview'}>
@@ -63,3 +107,5 @@ export default () => {
         </PageContentBlock>
     );
 };
+
+export default CoinsContainer;

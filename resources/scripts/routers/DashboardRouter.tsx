@@ -5,6 +5,8 @@ import AccountOverviewContainer from '@/components/dashboard/AccountOverviewCont
 import NavigationBar from '@/components/NavigationBar';
 import DashboardContainer from '@/components/dashboard/DashboardContainer';
 import AccountApiContainer from '@/components/dashboard/AccountApiContainer';
+import CoinsOverviewContainer from '@/components/dashboard/CoinsOverviewContainer';
+import CoinsEarnContainer from '@/components/dashboard/CoinsEarnContainer';
 import NotFound from '@/components/screens/NotFound';
 import TransitionRouter from '@/TransitionRouter';
 import SubNavigation from '@/components/elements/SubNavigation';
@@ -25,10 +27,20 @@ export default ({ location }: RouteComponentProps) => {
                     </div>
                 </SubNavigation>
             }
+            {location.pathname.startsWith('/coins') &&
+                <SubNavigation>
+                    <div>
+                        <NavLink to={'/coins'} exact>Overview</NavLink>
+                        <NavLink to={'/coins/earn'}>Earn</NavLink>
+                    </div>
+                </SubNavigation>
+            }
             <TransitionRouter>
                 <Switch location={location}>
                     <Route path={'/'} component={DashboardContainer} exact />
                     <Route path={'/account'} component={AccountOverviewContainer} exact/>
+                    <Route path={'/coins'} component={CoinsOverviewContainer} exact/>
+                    <Route path={'/coins/earn'} component={CoinsEarnContainer} exact/>
                     <Route path={'/account/api'} component={AccountApiContainer} exact/>
                     <Route path={'*'} component={NotFound} />
                 </Switch>

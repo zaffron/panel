@@ -28,15 +28,15 @@ export default () => {
     return (
         <PageContentBlock title={'Coins Overview'}>
             <Container>
-                <ContentBox css={tw`w-full`} title={'Nitro'}>
-                    <h3 css={tw`text-2xl font-bold mb-3 leading-7`}>What is nitro?</h3>
+                <ContentBox css={tw`w-full`} title={'Netric Coins'}>
+                    <h3 css={tw`text-2xl font-bold mb-3 leading-7`}>What is Netric Coins?</h3>
                     <p>
-                        {'Nitro'} is our own currency that you can use to exchange into Nodes resources.
-                        You can earn some Nitros by referring friends, keeping your browser open on our website, or following certain earning methods mentioned here.
-                        {'It\'s'} always free to earn {'Nitros'} and we {'won\'t'} charge any cost for it.
+                        {'Netric Coins'} is our own currency that you can use to exchange into Nodes resources.
+                        You can earn some Netric Coins by referring friends, keeping your browser open on our website, or following certain earning methods mentioned here.
+                        {'It\'s'} always free to earn {'Netric Coins'} and we {'won\'t'} charge any cost for it.
                     </p>
                 </ContentBox>
-                <ContentBox css={tw`xl:ml-8 mt-8 xl:mt-0`} title={'Netric Coins'}>
+                <ContentBox css={tw`xl:ml-8 mt-8 xl:mt-0`} title={'Coins Earned'}>
                     <div css={tw`flex items-start px-4 py-6 w-full`}>
                         <span css={tw`w-12 h-12 rounded-full object-cover mr-4 shadow`}>
                             <span css={tw`flex items-center justify-center h-full`}>
