@@ -68,7 +68,8 @@
         "psr-4": {
             "Pterodactyl\\Tests\\Browser\\": "tests/Browser",
             "Pterodactyl\\Tests\\Integration\\": "tests/Integration",
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Zaffron\\Pterodin\\": "packages/"
         }
     },
     "scripts": {
